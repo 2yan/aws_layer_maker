@@ -1,9 +1,10 @@
 import os
 import subprocess
 
-name = 'anr_openai'
-packages = ['openai']
-python_version = 'python3.9'
+name = 'Layer_name'
+packages = ['requests', 'pandas']
+local_files = ['local.py']
+python_version = 'python3.12'
 
 
 layer_dir = f"{name}"
@@ -16,7 +17,7 @@ os.system(f'rm -rf {layer_dir}')
 # Generate a Dockerfile
 print('check here for aws registry: https://gallery.ecr.aws/lambda/python')
 dockerfile_content = f"""
-FROM public.ecr.aws/lambda/python:3.9
+FROM public.ecr.aws/lambda/python:3.12
 
 WORKDIR /temp
 
@@ -42,12 +43,20 @@ os.makedirs(package_dir, exist_ok=True)
 os.system(f"docker cp {container_id}:./temp {package_dir}")
 os.system(f'mv {package_dir}/temp/* {package_dir}')
 os.system(f'rm -rf {package_dir}/temp')
+
+
+# Add local files to the package directory
+for local_file in local_files: 
+    os.system(f'cp {local_file} {package_dir}')
+
+
 # Cleanup the temporary container
 os.system(f"docker rm -v {container_id}")
 
 # Zip the package to create the Lambda layer zip
 os.chdir(name)
 os.system(f"zip -r {name}.zip python")
+os.chdir('..')
 os.system('rm Dockerfile')
 #os.system('docker system prune -a -f')
 
