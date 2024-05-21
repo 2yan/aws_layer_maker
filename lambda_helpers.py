@@ -1,5 +1,6 @@
 import json
 import base64
+from urllib.parse import parse_qs
 
 def get_headers():
     return {
@@ -20,21 +21,24 @@ def handle_options(event):
             'body': ''  # OPTIONS requests don't typically need a body
         }
 
-# Updating the get_event function to handle multipart data
-def get_event(event):
-    print(event)
 
-    if 'body' in event:
-        if not event['body']:
-            raise KeyError('No Params Passed in')
-
-        body = event['body']
-
-        if event.get('isBase64Encoded', True):
-            body = base64.b64decode(body).decode('utf-8')
+def get_body(event):
+    if event.get('isBase64Encoded', False):
+        data = base64.b64decode(event['body']).decode('utf-8')
+        body = parse_qs(data)
+        
+    else:
+        body = event.get('body', False)
+        if body:
+            try:
+                body= json.loads(body)
+            except json.JSONDecodeError:
+                body = parse_qs(body)
         else:
-            return json.loads(body)
-            
+
+            body = event.get('queryStringParameters', {'status': 'NO DATA SUBMITTED'} )
+    return body
+    
 def find_method(event):
     method = event.get('httpMethod', False)
     if not(method): 
