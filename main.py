@@ -1,10 +1,10 @@
 import os
 import subprocess
 
-name = 'Layer_name'
-packages = ['requests', 'pandas']
-local_files = ['local.py']
-python_version = 'python3.12'
+name = 'requests'
+packages = ['requests']
+local_files = []
+python_version = 'python3.10'
 
 
 layer_dir = f"{name}"
@@ -17,7 +17,7 @@ os.system(f'rm -rf {layer_dir}')
 # Generate a Dockerfile
 print('check here for aws registry: https://gallery.ecr.aws/lambda/python')
 dockerfile_content = f"""
-FROM public.ecr.aws/lambda/python:3.12
+FROM public.ecr.aws/lambda/{python_version.replace('thon3', 'thon:3')}
 
 WORKDIR /temp
 
