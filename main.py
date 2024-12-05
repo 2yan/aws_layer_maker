@@ -1,10 +1,10 @@
 import os
 import subprocess
 
-name = 'requests'
-packages = ['requests']
+name = 'pytz'
+packages = ['pytz']
 local_files = []
-python_version = 'python3.10'
+python_version = 'python3.12'
 
 
 layer_dir = f"{name}"
